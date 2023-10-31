@@ -1,0 +1,8 @@
+CREATE TABLE Users (
+    UserID SERIAL PRIMARY KEY,
+    Username VARCHAR(255) NOT NULL,
+    PasswordHash VARCHAR(255) NOT NULL,
+    Email VARCHAR(255) UNIQUE NOT NULL,
+    Role VARCHAR(255) NOT NULL,
+    CanvasToken VARCHAR(255)
+);

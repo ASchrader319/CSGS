@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: perndb
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  server:
+    build:
+      context: ./server
+    ports:
+      - "3300:3300"
+    depends_on:
+      - db
+
+  client:
+    build:
+      context: ./client
+    ports:
+      - "3000:3000"
