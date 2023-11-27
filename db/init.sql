@@ -3,7 +3,7 @@ CREATE TABLE Users (
     -- Username VARCHAR(255) NOT NULL,
     Password VARCHAR(255) NOT NULL,
     Email VARCHAR(255) UNIQUE,
-    Role VARCHAR(255) NOT NULL,
+    Role VARCHAR(255) NOT NULL
     --CanvasToken VARCHAR(255)
 );
 
@@ -49,7 +49,7 @@ CREATE TABLE TestCases (
     Weight INTEGER,
     Visibility BOOLEAN NOT NULL,
     MaxExecutionTime INTERVAL,
-    Type INTEGER NOT NULL,
+    Type INTEGER NOT NULL
 );
 
 CREATE TABLE Comments (
@@ -76,4 +76,26 @@ CREATE TABLE OriginalFiles (
     FileID SERIAL PRIMARY KEY,
     TestCaseID INTEGER REFERENCES TestCases(TestCaseID),
     FilePath VARCHAR(255) NOT NULL
+);
+
+
+CREATE TABLE Rubrics (
+    RubricID SERIAL PRIMARY KEY,
+    AssignmentID INTEGER REFERENCES Assignments(AssignmentID)
+);
+
+
+CREATE TABLE RubricItems (
+    RubricItemID SERIAL PRIMARY KEY,
+    RubricID INTEGER REFERENCES Rubrics(RubricID),
+    Description TEXT NOT NULL,
+    MaxPoints DECIMAL NOT NULL  -- DECIMAL type allows for non-integer values
+);
+
+
+CREATE TABLE ManualGrades (
+    ManualGradeID SERIAL PRIMARY KEY,
+    SubmissionID INTEGER REFERENCES Submissions(SubmissionID),
+    RubricItemID INTEGER REFERENCES RubricItems(RubricItemID),
+    Score DECIMAL NOT NULL
 );
