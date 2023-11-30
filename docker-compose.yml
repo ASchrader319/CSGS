@@ -7,6 +7,8 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
       POSTGRES_DB: perndb
+    ports:
+      - "5432:5432"  # Expose port 5432 for external connections
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
 
