@@ -103,6 +103,4 @@ CREATE TABLE ManualGrades (
 );
 
 
-ALTER TABLE OriginalFiles
-ADD COLUMN FileType INTEGER NOT NULL;
 

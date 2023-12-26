@@ -3,8 +3,6 @@ version: '3'
 services:
   db:
     image: postgres:13
-    env_file:
-      - ./server/.env
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -17,8 +15,6 @@ services:
   server:
     build:
       context: ./server
-    env_file:
-      - ./server/.env
     ports:
       - "3300:3300"
     depends_on:
