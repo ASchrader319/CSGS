@@ -1,0 +1,1 @@
+Folder that contains all the SQL Queries that will be exported for use in other folders
