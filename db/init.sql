@@ -74,8 +74,10 @@ CREATE TABLE SubmissionTestCaseResults (
 
 CREATE TABLE OriginalFiles (
     FileID SERIAL PRIMARY KEY,
-    TestCaseID INTEGER REFERENCES TestCases(TestCaseID),
-    FilePath VARCHAR(255) NOT NULL
+    TestCaseID INTEGER REFERENCES TestCases(TestCaseID) NULL,
+    AssignmentID INTEGER REFERENCES Assignments(AssignmentID),
+    FilePath VARCHAR(255) NOT NULL,
+    FileType INTEGER NOT NULL
 );
 
 
@@ -99,3 +101,8 @@ CREATE TABLE ManualGrades (
     RubricItemID INTEGER REFERENCES RubricItems(RubricItemID),
     Score DECIMAL NOT NULL
 );
+
+
+ALTER TABLE OriginalFiles
+ADD COLUMN FileType INTEGER NOT NULL;
+
