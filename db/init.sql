@@ -102,5 +102,5 @@ CREATE TABLE ManualGrades (
     Score DECIMAL NOT NULL
 );
 
-
+INSERT INTO Users (Password, Email, Role) VALUES ('password', 'test@test.com', 'test');
 
