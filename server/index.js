@@ -3,6 +3,9 @@ const express = require('express');
 const { Pool } = require('pg');
 const app = express();
 const PORT = process.env.PORT || 3300;
+const JWT = require("./middleware/jwt.js");
+
+const authRoutes = require("./routes/auth.js");
 
 const pool = new Pool({
     user: process.env.POSTGRES_USER,
@@ -44,9 +47,16 @@ pool.query(testQuery, (err, res) => {
   pool.end(); // Close the pool connection
 });
 
+
 app.get('/', (req, res) => {
     res.send('Hello from Express!');
 });
+
+app.use('/auth', authRoutes);
+
+// protected routes below
+app.use(JWT);
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
