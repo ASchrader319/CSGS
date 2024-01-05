@@ -19,7 +19,7 @@ exports.register = async (req, res) => {
         { regex: /(?=.*[a-z])/, message: 'Password must contain at least one lowercase letter' },
         { regex: /(?=.*[0-9])/, message: 'Password must contain at least one number' },
         { regex: /(?=.*[^A-Za-z0-9])/, message: 'Password must contain at least one special character' },
-        { regex: /^.{8,}$/, message: 'Password must be at least 8 characters long' }
+        { regex: /^.{6,}$/, message: 'Password must be at least 6 characters long' }
       ];
   
       const invalidPasswordMessages = passwordRegex
@@ -27,21 +27,14 @@ exports.register = async (req, res) => {
         .map(({ message }) => message);
   
       if (invalidPasswordMessages.length > 0) {
-        return res.status(400).json({ message: invalidPasswordMessages.join('\n') });
+        return res.status(400).json({ message: invalidPasswordMessages.join('. ') });
       }
   
-      // Check if username is unique
-      const isEmailUnique = await User.checkEmailUnique(email);
-      if (!isEmailUnique) {
-        return res.status(400).json({ message: 'Email already taken' });
-      }
-  
-      // Hash password before storing it
+      // Hash password before storing it - not working with docker
       // const hashedPassword = await bcrypt.hash(password, 10);
-      const hashedPassword = password;
 
       // Create new user in db
-      const userId = await User.createUser(email, hashedPassword, role);  
+      const userId = await User.createUser(email, password, role);
       // Generate jwt
       const token = jwt.sign({ userId: userId }, secretKey, { expiresIn: '72h' }); // Expires in 2 hours
   
@@ -49,8 +42,8 @@ exports.register = async (req, res) => {
       res.status(201).json({ message: 'User registered successfully', token: token });
       
     } catch (err) {
-      res.status(500).json({ message: 'Error registering user'});
-      console.error('Error registering user:', err);
+      res.status(500).json({ message: 'Error registering user', "error": err.message});
+      console.error('Error registering user [/server/controllers/authController.js : register]\n', err);
     }
   };
 
