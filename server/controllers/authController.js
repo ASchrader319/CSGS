@@ -58,7 +58,7 @@ exports.getValidJWT = async (req,res) => {
     return res.status(201).json({token: token});
 }
 
-exports.validateJWT = (req, res) => {
+exports.decodeJWT = (req, res) => {
     
     try {
         const authHeader = req.headers.authorization;
@@ -70,7 +70,7 @@ exports.validateJWT = (req, res) => {
         return res.status(200).json({ decoded: decoded });
 
     } catch (err) {
-        console.error('Error validating token:', err.message);
+        console.error('Error decoding token:', err.message);
         return res.status(401).json({ message: 'Forbidden - Invalid token', error: err.message});
     }
   };
