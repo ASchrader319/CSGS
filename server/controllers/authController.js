@@ -47,6 +47,34 @@ exports.register = async (req, res) => {
     }
   };
 
+  exports.login = async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      if (!password || !email) {
+        return res.status(400).json({ message: 'All fields are required: email & password' });
+      }
+  
+      // Hash password before storing it - not working with docker
+      // const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Try login
+      const userId = await User.login(email, password);
+      // Generate jwt
+      const token = jwt.sign({ userId: userId }, secretKey, { expiresIn: '72h' }); // Expires in 2 hours
+  
+      // Return user info in jwt
+      res.status(201).json({ message: 'User successfully logged in', token: token });
+      
+    } catch (err) {
+      if(err.message === 'Error: Invalid email or password')
+        return res.status(500).json({ message: 'Invalid email or password'});
+
+      res.status(500).json({ message: "Error logging in"});
+      console.error('Error logging user in [/server/controllers/authController.js : login]\n', err);
+    }
+  };
+
 
 
 exports.getValidJWT = async (req,res) => {
@@ -62,15 +90,19 @@ exports.decodeJWT = (req, res) => {
     
     try {
         const authHeader = req.headers.authorization;
+        if (!authHeader)
+          throw new Error("Please pass jwt in the Authorization header");
 
         const token = authHeader.split(' ')[1];
+
+        if (!token)
+          throw new Error("Please pass jwt in the Authorization header as 'Barer [jwt]'")
 
         const decoded = jwt.verify(token, secretKey);
 
         return res.status(200).json({ decoded: decoded });
 
     } catch (err) {
-        console.error('Error decoding token:', err.message);
         return res.status(401).json({ message: 'Forbidden - Invalid token', error: err.message});
     }
   };

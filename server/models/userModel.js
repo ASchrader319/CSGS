@@ -12,10 +12,24 @@ exports.createUser = async (email, password, role) => {
     const result = await query(insertQuery, [email, password, role]);
     return result.rows[0].userid;
   } catch (error) {
-    // console.error(error);
     if(error.code === "23505") {
       throw new Error(`${readUniqueError(error.detail)} already in use`);
     }
+    throw new Error(error);
+  }
+};
+
+exports.login = async (email, password) => {
+  const insertQuery = 'SELECT UserID FROM Users WHERE Email = $1 AND Password = $2';
+
+  try {
+    const result = await query(insertQuery, [email, password]);
+    if (result.rows.length > 0) {
+      return result.rows[0].userid;
+    } else {
+      throw new Error('Invalid email or password');
+    }
+  } catch (error) {
     throw new Error(error);
   }
 };
