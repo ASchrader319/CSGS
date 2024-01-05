@@ -16,14 +16,16 @@ services:
       retries: 10
 
   server:
-    build:
-      context: ./server
-    env_file:
-      - .env
-    ports:
-      - "${PORT}:${PORT}"
-    depends_on:
-      db:
+      build:
+        context: ./server
+      env_file:
+        - .env
+      ports:
+        - "${PORT}:${PORT}"
+      volumes:
+        - ./server:/app
+      depends_on:
+        db:
           condition: service_healthy
 
   client:
