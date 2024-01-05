@@ -24,6 +24,7 @@ services:
         - "${PORT}:${PORT}"
       volumes:
         - ./server:/app
+        - /app/node_modules
       depends_on:
         db:
           condition: service_healthy
