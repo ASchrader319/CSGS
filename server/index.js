@@ -45,7 +45,7 @@ app.get('/', (req, res) => {
 });
 
 // Import routes here to avoid problems with pool dependency
-const authRoutes = require("./routes/auth.js");
+const authRoutes = require("./routes/authRoutes.js");
 
 app.use('/auth', authRoutes);
 
