@@ -5,7 +5,6 @@ const app = express();
 const PORT = process.env.PORT || 3300;
 const JWT = require("./middleware/jwt.js");
 
-const authRoutes = require("./routes/auth.js");
 
 const pool = new Pool({
     user: process.env.POSTGRES_USER,
@@ -14,6 +13,8 @@ const pool = new Pool({
     password: process.env.POSTGRES_PASSWORD,
     port: process.env.POSTGRES_PORT,
 });
+
+exports.pool = pool;
 
 const maxRetries = 5;
 let retries = 0;
@@ -36,21 +37,15 @@ async function connectWithRetry(pool) {
 
 connectWithRetry(pool);
 
-const testQuery = 'SELECT NOW();'; 
-
-pool.query(testQuery, (err, res) => {
-  if (err) {
-    console.error('Error executing query', err.stack);
-  } else {
-    console.log('Query result:', res.rows);
-  }
-  pool.end(); // Close the pool connection
-});
-
+// Body parser middleware
+app.use(express.json());
 
 app.get('/', (req, res) => {
     res.send('Hello from Express!');
 });
+
+// Import routes here to avoid problems with pool dependency
+const authRoutes = require("./routes/auth.js");
 
 app.use('/auth', authRoutes);
 
@@ -61,5 +56,3 @@ app.use(JWT);
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-
-module.exports = pool;

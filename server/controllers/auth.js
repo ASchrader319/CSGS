@@ -1,6 +1,60 @@
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.JWT_SECRET_KEY;
 
+// Causes weird error in docker
+// const bcrypt = require('bcrypt');
+
+const User = require('../models/userModel');
+
+exports.register = async (req, res) => {
+    try {
+      const { email, password, role } = req.body;
+      
+      if (!password || !email || !role) {
+        return res.status(400).json({ message: 'All fields are required: email, password & role' });
+      }
+
+      const passwordRegex = [
+        { regex: /(?=.*[A-Z])/, message: 'Password must contain at least one uppercase letter' },
+        { regex: /(?=.*[a-z])/, message: 'Password must contain at least one lowercase letter' },
+        { regex: /(?=.*[0-9])/, message: 'Password must contain at least one number' },
+        { regex: /(?=.*[^A-Za-z0-9])/, message: 'Password must contain at least one special character' },
+        { regex: /^.{8,}$/, message: 'Password must be at least 8 characters long' }
+      ];
+  
+      const invalidPasswordMessages = passwordRegex
+        .filter(({ regex }) => !regex.test(password))
+        .map(({ message }) => message);
+  
+      if (invalidPasswordMessages.length > 0) {
+        return res.status(400).json({ message: invalidPasswordMessages.join('\n') });
+      }
+  
+      // Check if username is unique
+      const isEmailUnique = await User.checkEmailUnique(email);
+      if (!isEmailUnique) {
+        return res.status(400).json({ message: 'Email already taken' });
+      }
+  
+      // Hash password before storing it
+      // const hashedPassword = await bcrypt.hash(password, 10);
+      const hashedPassword = password;
+
+      // Create new user in db
+      const userId = await User.createUser(email, hashedPassword, role);  
+      // Generate jwt
+      const token = jwt.sign({ userId: userId }, secretKey, { expiresIn: '72h' }); // Expires in 2 hours
+  
+      // Return user info in jwt
+      res.status(201).json({ message: 'User registered successfully', token: token });
+      
+    } catch (err) {
+      res.status(500).json({ message: 'Error registering user'});
+      console.error('Error registering user:', err);
+    }
+  };
+
+
 
 exports.getValidJWT = async (req,res) => {
     
