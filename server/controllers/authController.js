@@ -34,9 +34,9 @@ exports.register = async (req, res) => {
       // const hashedPassword = await bcrypt.hash(password, 10);
 
       // Create new user in db
-      const userId = await User.createUser(email, password, role);
+      const user = await User.createUser(email, password, role);
       // Generate jwt
-      const token = jwt.sign({ userId: userId }, secretKey, { expiresIn: '72h' }); // Expires in 2 hours
+      const token = jwt.sign({ userId: user.userid, role: user.role }, secretKey, { expiresIn: '72h' }); // Expires in 2 hours
   
       // Return user info in jwt
       res.status(201).json({ message: 'User registered successfully', token: token });
@@ -59,9 +59,10 @@ exports.register = async (req, res) => {
       // const hashedPassword = await bcrypt.hash(password, 10);
 
       // Try login
-      const userId = await User.login(email, password);
+      const user = await User.login(email, password);
+
       // Generate jwt
-      const token = jwt.sign({ userId: userId }, secretKey, { expiresIn: '72h' }); // Expires in 2 hours
+      const token = jwt.sign({ userId: user.userid, role: user.role }, secretKey, { expiresIn: '72h' }); // Expires in 2 hours
   
       // Return user info in jwt
       res.status(201).json({ message: 'User successfully logged in', token: token });

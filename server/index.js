@@ -46,12 +46,14 @@ app.get('/', (req, res) => {
 
 // Import routes here to avoid problems with pool dependency
 const authRoutes = require("./routes/authRoutes.js");
+const userRoutes = require("./routes/userRoutes.js");
 
 app.use('/auth', authRoutes);
 
 // protected routes below
 app.use(JWT);
 
+app.use('/user', userRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
